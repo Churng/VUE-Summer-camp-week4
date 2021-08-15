@@ -1,0 +1,22 @@
+* {
+	padding: 0;
+	margin: 0;
+}
+
+body {
+	background-color: #212529;
+}
+
+@import url("https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300&display=swap");
+
+/* p {
+	font-family: "Noto Sans TC", sans-serif;
+} */
+/* @font-face {
+	font-family: pictos;
+	src: url("pictos/zpix.ttf"), url("pictos/misaki_mincho.ttf");
+}
+
+p {
+	font-family: pictos;
+} */

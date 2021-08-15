@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Vue-Summer-Camp-Week4</title>
+		<link
+			href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css"
+			rel="stylesheet"
+			integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC"
+			crossorigin="anonymous"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css?family=Press+Start+2P"
+			rel="stylesheet"
+		/>
+		<link href="https://unpkg.com/nes.css/css/nes.css" rel="stylesheet" />
+		<link rel="stylesheet" href="all.css" />
+	</head>
+	<body>
+		<div id="app">
+			<header>
+				<nav class="navbar navbar-light bg-warning fw-light">
+					<div class="container-fluid">
+						<i class="nes-mario"></i>
+						<i class="nes-icon coin is-large"></i>
+						<i class="nes-icon coin is-large"></i>
+						<i class="nes-icon coin is-large"></i>
+						<i class="nes-icon coin is-large"></i>
+						<span class="navbar-brand mb-0 h1">Summer-Vue-Camp Week-4</span>
+					</div>
+				</nav>
+			</header>
+			<div class="main mt-5">
+				<div class="container">
+					<div class="nes-container is-dark with-title">
+						<p class="title">Todo-list</p>
+						<p>WHAT NEEDS TO BE DONE ?</p>
+						<div
+							style="background-color: #212529; padding: 1rem"
+							class="nes-field is-inline"
+						>
+							<label for="dark_field" style="color: #fff">TASK</label>
+							<input
+								type="text"
+								id="dark_field"
+								class="nes-input is-dark"
+								placeholder="WRITE DONE HERE.."
+								v-model.trim="newTodo"
+								@keyup.enter="addTodo"
+							/>
+							<button
+								type="button"
+								class="nes-btn is-primary"
+								id="addTodo"
+								@click="addTodo"
+							>
+								NEW
+							</button>
+						</div>
+					</div>
+					<!-- HISTORY TASK -->
+					<div class="nes-container is-dark with-title mt-5">
+						<p class="title">Task</p>
+
+						<div class="lists">
+							<ul class="nes-list is-circle" id="todoList">
+								<li v-for="item in filterTodo" :key="item.id">
+									<input
+										type="checkbox"
+										class="nes-checkbox is-dark"
+										:id="'a'+item.id"
+										v-model="item.isCompleted"
+									/>
+									<label
+										:for="'a'+item.id"
+										:class="{ 'text-decoration-line-through': item.isCompleted }"
+									>
+										{{item.todo}}
+									</label>
+
+									<div class="nes-field is-inline" v-show="temp.id === item.id">
+										<label for="inline_field">EDIT</label>
+										<input
+											type="text"
+											class="nes-input is-success"
+											placeholder="EDIT SOMETHING.."
+											v-model="item.todo"
+											@keyup.enter="doneEdit(item)"
+										/>
+										<button
+											type="button"
+											class="nes-btn is-success"
+											value="編輯完成"
+											@click="doneEdit(item)"
+										>
+											DONE
+										</button>
+									</div>
+									<div class="d-flex justify-content-end">
+										<button
+											type="button"
+											class="nes-btn is-success"
+											@click="editTodo(item)"
+										>
+											EDIT
+										</button>
+										<button
+											type="button"
+											class="nes-btn is-error text-end"
+											@click="deleteTodo(item.id)"
+										>
+											DELETE
+										</button>
+									</div>
+								</li>
+							</ul>
+						</div>
+					</div>
+					<!--TASK SELECT STATE -->
+					<div class="nes-container is-dark with-title mt-5">
+						<p class="title">TASK STATE</p>
+						<div class="">
+							<div class="mb-5 d-flex justify-content-center">
+								<span class="nes-text is-success" id="taskCount"
+									>{{ todoList.length }}</span
+								>
+								<span class="nes-text is-warning">TASKS</span>
+							</div>
+
+							<div class="d-flex justify-content-evenly">
+								<a href="#" class="nes-badge" @click="filter = 'all'">
+									<span class="is-primary">all</span>
+								</a>
+
+								<a href="#" class="nes-badge" @click="filter = 'uncompleted'">
+									<span class="is-success">undone</span>
+								</a>
+
+								<a href="#" class="nes-badge" @click="filter = 'completed'">
+									<span class="is-warning">done</span>
+								</a>
+
+								<a href="#" class="nes-badge" @click="clearAll">
+									<span class="is-error">delete</span>
+								</a>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<script
+			src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"
+			integrity="sha384-p34f1UUtsS3wqzfto5wAAmdvj+osOnFyQFpp4Ua3gs/ZVWx6oOypYoCJhGGScy+8"
+			crossorigin="anonymous"
+		></script>
+		<script src="https://unpkg.com/vue@next"></script>
+		<script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+		<script
+			src="https://code.jquery.com/jquery-3.6.0.min.js"
+			integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4="
+			crossorigin="anonymous"
+		></script>
+
+		<script type="module">
+			import {
+				createApp,
+				ref,
+				computed,
+				onMounted,
+			} from "https://cdnjs.cloudflare.com/ajax/libs/vue/3.1.4/vue.esm-browser.min.js"
+
+			const app = createApp({
+				setup() {
+					const filter = ref("all")
+					const todoList = ref([])
+					const newTodo = ref("")
+					const temp = ref("")
+
+					function addTodo() {
+						//新增待辦事項
+						if (!newTodo.value) {
+							return
+						}
+						todoList.value.push({
+							id: Date.now(),
+							todo: newTodo.value,
+							isCompleted: false,
+						})
+						newTodo.value = ""
+						//存入localStorage
+						localStorage.setItem("todoList", JSON.stringify(todoList.value))
+					}
+
+					function doneTodo(item) {
+						const index = todoList.value.findIndex((item) => item.id === item)
+						item.isCompleted = !item.isCompleted
+						//存入localStorage
+						localStorage.setItem("todoList", JSON.stringify(todoList.value))
+					}
+
+					function editTodo(item) {
+						//修改待辦事項
+						temp.value = { ...item }
+					}
+
+					function doneEdit(item) {
+						const index = todoList.value.findIndex((item) => item.id === item)
+						todoList.value[index] = temp.value
+						temp.value = ""
+						//存入localStorage
+						localStorage.setItem("todoList", JSON.stringify(todoList.value))
+					}
+
+					function deleteTodo(id) {
+						//刪除單一待辦事項
+						const index = todoList.value.findIndex((item) => item.id === id)
+						todoList.value.splice(index, 1)
+						localStorage.setItem("todoList", JSON.stringify(todoList.value))
+					}
+
+					function clearAll() {
+						//清除全部事項
+						todoList.value = []
+						localStorage.clear()
+					}
+
+					const filterTodo = computed(() => {
+						switch (filter.value) {
+							case "uncompleted":
+								return todoList.value.filter((item) => !item.isCompleted)
+								break
+							case "completed":
+								return todoList.value.filter((item) => item.isCompleted)
+								break
+							default:
+								return todoList.value
+						}
+					})
+
+					onMounted(() => {
+						todoList.value = JSON.parse(localStorage.getItem("todoList")) || []
+					})
+
+					return {
+						filter,
+						todoList,
+						newTodo,
+						temp,
+						addTodo,
+						doneTodo,
+						editTodo,
+						doneEdit,
+						deleteTodo,
+						clearAll,
+						filterTodo,
+					}
+				},
+			}).mount("#app")
+		</script>
+	</body>
+</html>
